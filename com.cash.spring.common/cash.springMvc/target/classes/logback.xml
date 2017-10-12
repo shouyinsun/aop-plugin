@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<configuration>  
+  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+  	<encoder>
+  		<pattern>
+  			logback:%-20(%d{HH:mm:ss.SSS} [%thread]) %-5level %logger{80} - %msg%n
+  		</pattern>
+  	</encoder>
+  </appender>
+  <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">  
+    <file>logs/xxx.log</file>  
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+      <fileNamePattern>logs/xxx.%d{yyyy-MM-dd}.log.zip</fileNamePattern>  
+    </rollingPolicy>  
+    <layout class="ch.qos.logback.classic.PatternLayout">  
+      <pattern>%-20(%d{HH:mm:ss.SSS} [%thread]) %-5level %logger{80} - %msg%n</pattern>  
+    </layout>  
+  </appender>  
+  
+  <!-- org.springframework.web 下的包的日志级别设置成 debug -->
+  <logger name="org.springframework.web" level="DEBUG"/>	
+  
+  <root level="DEBUG">  
+    <appender-ref ref="console" />  
+  </root>  
+  
+</configuration>  

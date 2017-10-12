@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:aop="http://www.springframework.org/schema/aop" xsi:schemaLocation="
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+
+	<!-- 开启自动扫描 -->
+	<context:component-scan base-package="com.cash.spring.aop.plugin"/>
+
+	<!-- 启用注解 -->
+	<context:annotation-config />
+	<!--默认的注解映射支持 -->
+	<mvc:annotation-driven content-negotiation-manager="contentNegotiationManager" />
+
+	<!-- false 接口代理 true 继承类代理 -->
+	<aop:aspectj-autoproxy proxy-target-class="false" />
+
+	<aop:config>
+		<aop:pointcut id="plugin" expression="@within(com.cash.spring.aop.plugin.plugin.annotation.Plugable) || @annotation(com.cash.spring.aop.plugin.plugin.annotation.Plugable)"/>
+
+		<!--配置插件AOP切点，为了防止插件拦截器拦截所有方法，
+            指明了只有特定annotation的方法或者类才会被插件拦截拦截-->
+		<!--配置拦截器，为了保证事务与原来事务一致，需要将此aop执行的顺序配置在事务管理器之后，
+            具体做法是，此拦截器的order 要大于事务AOP的order-->
+		<aop:aspect ref="pluginProxy" order="1">
+			<aop:around pointcut-ref="plugin" method="execute"/>
+		</aop:aspect>
+	</aop:config>
+
+	<!--配置插件AOP类-->
+	<bean id="pluginProxy" class="com.cash.spring.aop.plugin.plugin.PluginProxy">
+		<property name="provider">
+			<!--通过读取annotation信息来定义插件信息-->
+			<bean class="com.cash.spring.aop.plugin.plugin.provider.AnnotationPluginProvider">
+				<!--扫描那些包下的插件类-->
+				<property name="packagesToScan">
+					<list>
+						<value>com.cash.spring.aop.plugin.servicePlugin</value>
+					</list>
+				</property>
+				<property name="locations">
+					<list>
+						<value>
+							classpath*:plugin/plugin.xml
+						</value>
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+		<property name="favorPathExtension" value="false" />
+		<property name="favorParameter" value="true" />
+		<property name="parameterName" value="mediaType" />
+		<property name="ignoreAcceptHeader" value="true" />
+		<property name="useJaf" value="false" />
+		<property name="defaultContentType" value="application/json" />
+		<property name="mediaTypes">
+			<map>
+				<entry key="json" value="application/json" />
+				<entry key="xml" value="application/xml" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="domainFilter" class="com.cash.spring.aop.plugin.filter.DomainFilter"/>
+
+	<!-- 引入redis属性配置文件 -->
+	<import resource="redis-context.xml"/>
+</beans>

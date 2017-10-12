@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+    <plugin>
+        <signature>com.cash.spring.aop.plugin.service.TestService.ForReplacePlugin(com.cash.spring.aop.plugin.dto.XxDto)</signature>
+        <isSpringBean>true</isSpringBean>
+        <beanName>testServicePlugin</beanName>
+        <beanClass>com.cash.spring.aop.plugin.servicePlugin.TestServicePlugin</beanClass>
+        <method>ForReplacePlugin</method>
+        <execution>REPLACE</execution>
+        <companyId>10,20</companyId>
+    </plugin>
+</plugins>

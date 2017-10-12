@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="cash.aop.plugin:war">
+    <output-path>$PROJECT_DIR$/cash.aop.plugin/target</output-path>
+    <root id="archive" name="cash.aop.plugin.war">
+      <element id="artifact" artifact-name="cash.aop.plugin:war exploded" />
+    </root>
+  </artifact>
+</component>
